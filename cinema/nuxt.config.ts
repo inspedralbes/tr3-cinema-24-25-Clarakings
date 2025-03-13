@@ -1,5 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
-  devtools: { enabled: true }
+  devtools: { enabled: true },
+  modules: ["@nuxtjs/tailwindcss", '@pinia/nuxt'],
+  ssr: false,
+  axios: {
+    proxy: true,
+    credentials: false
+  },
+  proxy: {
+    '/api/': {
+      target: 'http://localhost:8001/',
+      pathRewrite: { '^/api/': '' }
+    }
+  },
 })
