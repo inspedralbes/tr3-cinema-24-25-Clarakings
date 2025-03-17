@@ -13,7 +13,7 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $fields = $request->validate([
+        $request->validate([
             'name' => 'required',
             'surname' => 'required',
             'birthday' => 'required',
@@ -22,60 +22,61 @@ class AuthController extends Controller
             'password' => 'required'
         ]);
 
-        $user = new User();
 
-        $user->first_name = $fields['name'];
-        $user->last_name = $fields['surname'];
-        $user->birthday = $fields['birthday'];
-        $user->phone_number = $fields['phone_number'];
-        $user->email = $fields['email'];
-        $user->password = bcrypt($fields['password']);
+        $user = User::create([
+            'name' => $request->name,
+            'surname' => $request->surname,
+            'birthday' => $request->birthday,
+            'phone_number' => $request->phone_number,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-        $user->save();
+        $token = $user->createToken('auth_token')->plainTextToken;
 
-        $token = $user->createToken($user['email'])->plainTextToken;
-
-        $response = [
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User created successfully',
             'user' => $user,
-            'token' => $token
-        ];
-
-        return response($response, 200);
+            'token' => $token,
+        ]);
     }
 
     public function login(Request $request)
     {
-        $fields = $request->validate([
-            'email' => 'required|string',
-            'password' => 'required|string'
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
-        //Check email
-        $user = User::where('email', $fields['email'])->first();
-
-        //Check password
-        if(!$user || !Hash::check($fields['password'], $user->password)){
-            return response([
-                'message' => 'Bad credentials'
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
             ], 401);
         }
 
-        $token = $user->createToken($user['email'])->plainTextToken;
+        //$u = Auth::user();
+        //$user = User::where('email', $request->email)->firstOrFail();
+        //$token = $user->createToken('auth_token')->plainTextToken;
+        $user = User::find(Auth::id());
+        $t = $user->createToken('auth_token');
+        $token = $t->plainTextToken;
 
-        $response = [
+        return response()->json([
+            'status' => 'success',
             'user' => $user,
-            'token' => $token
-        ];
-
-        return response($response, 200);
+            'token' => $token,
+        ]);
     }
 
     public function logout(Request $request)
     {
-        Auth::user()->tokens()->delete();
+        $request->user()->currentAccessToken()->delete();
 
-        return [
-            'message' => 'Logged out'
-        ];
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Successfully logged out',
+        ]);
     }
 }

@@ -1,5 +1,5 @@
 import { io } from "socket.io-client";
-import { useAppStore } from '../store/index';
+import { useAppStore } from '../store/index.js';
 
 const URL = "http://localhost:3727";
 //const URL = "http://.daw.inspedralbes.cat:3727" //producción

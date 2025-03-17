@@ -46,7 +46,7 @@ services:
     working_dir: /app
     command: >
       bash -c "npm install
-      && nodemon index.js -L"
+      && nodemon server.js -L"
     ports:
       - "3727:3727"
 

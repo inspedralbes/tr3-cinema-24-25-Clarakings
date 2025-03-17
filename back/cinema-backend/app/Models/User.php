@@ -18,8 +18,7 @@ class User extends Authenticatable
         'birthday',
         'phone_number',
         'email',
-        'password',
-        'type'
+        'password'
     ];
 
     protected $hidden = [
@@ -32,7 +31,7 @@ class User extends Authenticatable
     ];
 
     protected $table = 'users';
-    protected $primaryKey = 'id_user';
+    //protected $primaryKey = 'id_user';
 
     public $timestamps = false;
 }

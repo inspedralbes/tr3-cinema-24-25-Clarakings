@@ -1,4 +1,4 @@
-const url = 'http://localhost:8001/api/api';
+const url = 'http://localhost:8001/api';
 //const url = 'http:///laravel/public/api'; //producción
 
 export function getAllMovies() {

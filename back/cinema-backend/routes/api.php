@@ -18,7 +18,7 @@ use App\Http\Controllers\AuthController;
 |
 */
 
-Route::group(['prefix' => 'api'], function () {
+
 
     // Rutas públicas
     Route::get('/movies', [MoviesController::class, 'index']);
@@ -55,5 +55,3 @@ Route::group(['prefix' => 'api'], function () {
         // Cierre de sesión
         Route::post('/logout', [AuthController::class, 'logout']);
     });
-
-});
