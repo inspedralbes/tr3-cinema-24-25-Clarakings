@@ -4,7 +4,7 @@
         <div class="max-w-md mx-auto">
             <!-- Header -->
             <div class="text-center mb-10">
-                <h2 class="text-4xl font-bold text-white mb-2">Bienvenido a CinesKings</h2>
+                <h2 class="text-4xl font-bold text-white mb-2">Bienvenido a KingsCinema</h2>
                 <p class="text-gray-400">Tu portal de entretenimiento cinematográfico</p>
             </div>
 
@@ -44,14 +44,14 @@
                 <div class="space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label for="first_name" class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
-                            <input v-model="firstName" type="text" id="first_name"
+                            <label for="name" class="block text-sm font-medium text-gray-300 mb-2">Nombre</label>
+                            <input v-model="name" type="text" id="name"
                                 class="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200"
                                 placeholder="Juan">
                         </div>
                         <div>
-                            <label for="last_name" class="block text-sm font-medium text-gray-300 mb-2">Apellido</label>
-                            <input v-model="lastName" type="text" id="last_name"
+                            <label for="surname" class="block text-sm font-medium text-gray-300 mb-2">Apellido</label>
+                            <input v-model="surname" type="text" id="surname"
                                 class="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition duration-200"
                                 placeholder="Pérez">
                         </div>
@@ -119,8 +119,8 @@ export default {
     data() {
         return {
             password: '',
-            firstName: '',
-            lastName: '',
+            name: '',
+            surname: '',
             birthday: '',
             phoneNumber: '',
             email: '',
@@ -161,15 +161,15 @@ export default {
         },
         postRegisterForm() {
             const store = useAppStore();
-            if (this.firstName == '' || this.lastName == '' || this.phoneNumber == '' || 
+            if (this.name == '' || this.surname == '' || this.phoneNumber == '' || 
                 this.email == '' || this.password == '' || this.passwordConfirmation == '') {
                 this.showError('Por favor, completa todos los campos obligatorios');
             } else if (this.password !== this.passwordConfirmation) {
                 this.showError('Las contraseñas no coinciden');
             } else {
                 let user = {
-                    first_name: this.firstName,
-                    last_name: this.lastName,
+                    name: this.name,
+                    surname: this.surname,
                     birthday: this.birthday,
                     phone_number: this.phoneNumber,
                     email: this.email,

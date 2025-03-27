@@ -1,41 +1,81 @@
 <template>
-    <NuxtLayout name="navbar" /> 
-    <HeaderMovie v-show="showMovie" :movie="movie" />
-    <MoviesCarousel class="p-4 pb-8" v-show="showMovie" :movies="movies" />
-
-    <div v-show="showMovie" class="flex flex-col md:flex-row justify-center items-center p-9 bg-blue-950">
-        <img :src="movie.image" alt="Poster de la película" class="w-65 h-80 mb-4 md:mb-0 md:mr-4">
-        <div class="bg-gray-900 text-slate-50 rounded-lg m-4 p-2">
-            <h1 class="text-2xl font-bold mb-2">{{ movie.title }}</h1>
-            <div class="mb-2">
-                <p><strong>Director:</strong> {{ movie.director }}</p>
-                <div><strong>Actores:</strong>
-                    <ul>
-                        <li v-for="actor in actors" :key="actor"> {{ actor }} </li>
-                    </ul>
+    <NuxtLayout name="navbar" />
+    <div class="min-h-screen bg-neutral-900">
+        <!-- Hero Section -->
+        <div v-if="showMovie" class="relative h-[70vh]">
+            <img :src="movie.image" :alt="movie.title" class="w-full h-full object-cover opacity-40">
+            <div class="absolute inset-0 bg-gradient-to-t from-neutral-900 to-transparent"></div>
+            <div class="absolute bottom-0 left-0 right-0 p-8">
+                <div class="container mx-auto">
+                    <h1 class="text-6xl font-bold text-white mb-4">{{ movie.title }}</h1>
+                    <div class="flex items-center space-x-4 text-gray-300 mb-6">
+                        <span>{{ movie.duration }}</span>
+                        <span>•</span>
+                        <span>{{ movie.gendre }}</span>
+                        <span>•</span>
+                        <span>{{ movie.classification }}</span>
+                    </div>
                 </div>
-                <p><strong>Género:</strong> {{ movie.genre }}</p>
-                <p><strong>Clasificación:</strong> {{ movie.classification }}</p>
             </div>
-            <div class="mb-2">
-                <p class="font-semibold">Sinopsis:</p>
-                <p>{{ movie.sinopsis }}</p>
-            </div>            
         </div>
-        <div class="bg-gray-900 text-slate-50 rounded-lg m-4 p-2 shadow-md">
-            <p class="my-9 mx-2"><strong>Duración:</strong> {{ movie.duration }}</p>
-            <p class="my-9 mx-2"><strong>Fecha de Estreno:</strong> {{ movie.premiere }}</p>
+
+        <!-- Movie Details -->
+        <div class="container mx-auto px-4 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Poster -->
+                <div class="md:col-span-1">
+                    <img :src="movie.image" :alt="movie.title" class="w-full rounded-lg shadow-xl">
+                </div>
+
+                <!-- Info -->
+                <div class="md:col-span-2 text-white">
+                    <div class="bg-neutral-800 rounded-lg p-6 shadow-xl">
+                        <h2 class="text-2xl font-bold mb-4">Sinopsis</h2>
+                        <p class="text-gray-300 mb-6">{{ movie.sinopsis }}</p>
+
+                        <div class="grid grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Director</h3>
+                                <p class="text-gray-300">{{ movie.director }}</p>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-semibold mb-2">Fecha de Estreno</h3>
+                                <p class="text-gray-300">{{ movie.premiere }}</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6">
+                            <h3 class="text-lg font-semibold mb-2">Reparto</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span v-for="actor in actors" :key="actor" 
+                                    class="bg-neutral-700 px-3 py-1 rounded-full text-sm text-gray-300">
+                                    {{ actor }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sesiones -->
+                    <div class="mt-8">
+                        <h2 class="text-2xl font-bold mb-6">Próximas Sesiones</h2>
+                        <SessionSection v-if="showMovie" :id_movie="$route.params.id" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Películas Relacionadas -->
+        <div class="bg-neutral-800 py-12 mt-8">
+            <div class="container mx-auto px-4">
+                <h2 class="text-2xl font-bold text-white mb-6">Películas Similares</h2>
+                <MoviesCarousel :movies="movies" />
+            </div>
         </div>
     </div>
 
-    <div class="p-9 bg-blue-950">
-        <SessionSection v-if="showMovie" :id_movie="this.$route.params.id" />
-    </div>
-
-    <!-- <SessionSection v-if="showMovie" class="p-9 bg-blue-950" :id_movie="this.$route.params.id" /> -->
-
-    <div v-show="!showMovie" class="flex items-center justify-center h-screen">
-        <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+    <!-- Loading State -->
+    <div v-if="!showMovie" class="flex items-center justify-center h-screen bg-neutral-900">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-red-600"></div>
     </div>
 </template>
 
@@ -52,24 +92,19 @@ export default {
             showMovie: false
         };
     },
-    methods: {
-
-    },
     mounted() {
-        if (this.$route.params.id != undefined) {
-            // Obtener el store
+        if (this.$route.params.id !== undefined) {
             const store = useAppStore();
-            // Llamada a la API para obtener las películas
             getMovie(this.$route.params.id).then((response) => {
-                // Guardar la película en el store
                 this.movie = response;
                 store.setMovie(response);
                 store.setMovieId(parseInt(response.id_movie));
-                // Guardar los actores
-                this.actors = JSON.parse(response.actors);
-                // Guardar todas las películas y si no buscarlas otra vez
+                
+                // Asegurar que response.actors sea un array
+                this.actors = Array.isArray(response.actors) ? response.actors : JSON.parse(response.actors || "[]");
+                
                 this.movies = store.all_movies;
-                if (this.movies.length == 0) {
+                if (this.movies.length === 0) {
                     getAllMovies().then((response) => {
                         this.movies = response;
                         store.setAllMovies(response);
@@ -77,31 +112,11 @@ export default {
                         console.error(error);
                     });
                 }
-                // Mostrar la película
                 this.showMovie = true;
             }).catch((error) => {
                 console.error(error);
             });
-        } else {
-            console.error("El parámetro id no está definido");
         }
     }
 };
 </script>
-
-<style scoped>
-@keyframes loader {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
-}
-
-.loader {
-    border-top-color: #3498db;
-    animation: loader 1.5s linear infinite;
-}
-</style>

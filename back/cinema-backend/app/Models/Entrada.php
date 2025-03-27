@@ -17,5 +17,7 @@ class Entrada extends Model
         'phone_number',
     ];
 
+    protected $table = 'tickets';
+
     public $timestamps = false;
 }

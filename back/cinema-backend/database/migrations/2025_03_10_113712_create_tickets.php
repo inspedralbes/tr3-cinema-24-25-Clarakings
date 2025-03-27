@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('seat');
             $table->decimal('price', 10, 2);
             $table->string('email');
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
+            $table->string('surname');
             $table->string('phone_number');
             $table->timestamps();
 
@@ -32,8 +32,8 @@ return new class extends Migration
             'seat' => 'A-1',
             'price' => 4.00,
             'email' => 'client1@gmail.com',
-            'first_name' => 'Client',
-            'last_name' => 'One',
+            'name' => 'Client',
+            'surname' => 'One',
             'phone_number' => '123456789',
         ]);
     }

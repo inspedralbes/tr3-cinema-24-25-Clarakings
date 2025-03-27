@@ -3,56 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Correo de Confirmación de Compra</title>
+    <title>Confirmación de Compra - KingsCinema</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-color: #f8f9fa;
+            color: #333;
         }
         .container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 30px auto;
             padding: 20px;
             background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
         h1 {
-            color: #333333;
+            color: #2c3e50;
         }
         p {
-            color: #666666;
+            color: #555;
+            line-height: 1.6;
         }
-        table {
+        .ticket-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
-        th, td {
-            border: 1px solid #dddddd;
-            padding: 8px;
-            text-align: left;
+        .ticket-table th, .ticket-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
         }
-        th {
-            background-color: #f2f2f2;
+        .ticket-table th {
+            background-color: #34495e;
+            color: white;
         }
         .footer {
             margin-top: 20px;
-            color: #999999;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        .qr-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .qr-image {
+            max-width: 200px;
+            height: auto;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Estimado, {{ $cliente['first_name'] }} {{ $cliente['last_name'] }}, cliente de CineVilla!</h1>
-        <br>
-        <p>Gracias por escoger nuestro cine local para disfrutar de una tarde espectacular.</p>
-        <br>
-        <p>Adjunto a este correo electrónico, encontrarás un archivo PDF detallando los elementos adquiridos. Por favor, revisa los detalles cuidadosamente para asegurarte de que todo es correcto. Si encuentras alguna discrepancia o tienes alguna pregunta sobre tu compra, no dudes en ponerte en contacto con nuestro equipo de atención al cliente. Estaremos encantados de ayudarte en todo lo que necesites.</p>
-        <br>
-        <table>
+        <h1>¡Hola {{ $cliente['name'] }} {{ $cliente['surname'] }}!</h1>
+        <p>Gracias por elegir <strong>KingsCinema</strong> para tu experiencia cinematográfica.</p>
+        <p>A continuación, encontrarás el código QR para tus entradas. Puedes presentarlo en la entrada del cine.</p>
+
+        <table class="ticket-table">
             <thead>
                 <tr>
                     <th>Fecha</th>
@@ -70,13 +83,15 @@
                 @endfor
             </tbody>
         </table>
-        {{-- <p>Precio total: ${{ $totalPrice }}</p> --}}
-        <br>
-        <p>Gracias de nuevo por tu compra. Esperamos verte pronto en CineVilla para satisfacer tus futuras necesidades cinemáticas. ¡Ten un gran día!</p>
-        <br>
+
+        <div class="qr-container">
+            <!-- Placeholder para el código QR generado dinámicamente -->
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN8Enp-u5_AjM00-hp9CZXYCcfzkSHNiFJtA&s" alt="Código QR de Entradas" class="qr-image">
+        </div>
+
         <div class="footer">
-            <p>Atentamente,</p>
-            <p>Servicio al cliente de {{ config('app.name') }}.</p>
+            <p>¡Te esperamos pronto en <strong>KingsCinema</strong> para más películas increíbles!</p>
+            <p>Atentamente, <br> Equipo de Atención al Cliente - {{ config('app.name') }}</p>
         </div>
     </div>
 </body>

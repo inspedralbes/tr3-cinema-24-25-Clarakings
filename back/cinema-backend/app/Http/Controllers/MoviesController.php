@@ -21,34 +21,48 @@ class MoviesController extends Controller
      */
     public function create(Request $request)
     {
-        $fildsets = $request->validate([
-            'image' => 'unique:movies',
-            'title' => 'required|unique:movies',
-            'director' => 'required',
-            'actors' => 'array',
-            'sinopsis' => 'required',
-            'premiere' => 'date',
-            'gendre' => 'string',
-            'duration' => 'required',
-            'classification' => 'required'
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'image' => 'nullable|unique:movies',
+                'title' => 'required|unique:movies',
+                'director' => 'required',
+                'actors' => 'array',
+                'sinopsis' => 'required',
+                'premiere' => 'date',
+                'gendre' => 'string',
+                'duration' => 'required',
+                'classification' => 'required'
+            ]);
 
-        $movie = new Movies();
+            $movie = new Movies();
 
-        $movie["image"] = $fildsets["image"];
-        $movie["title"] = $fildsets["title"];
-        $movie["director"] = $fildsets["director"];
-        $movie["actors"] = json_encode($fildsets["actors"]);
-        $movie["sinopsis"] = $fildsets["sinopsis"];
-        $movie["duration"] = $fildsets["duration"] + " minutos";
-        $movie["premiere"] = $fildsets["premiere"];
-        $movie["gendre"] = $fildsets["gendre"];
-        $movie["classification"] = $fildsets["classification"];
+            $movie->image = $validatedData['image'] ?? null;
+            $movie->title = $validatedData['title'];
+            $movie->director = $validatedData['director'];
+            $movie->actors = json_encode($validatedData['actors']);
+            $movie->sinopsis = $validatedData['sinopsis'];
+            $movie->duration = $validatedData['duration'] . " minutos";
+            $movie->premiere = $validatedData['premiere'];
+            $movie->gendre = $validatedData['gendre'];
+            $movie->classification = $validatedData['classification'];
 
-        if ($movie->save()) {
-            return response()->json(['message' => 'Movie created successfully'], 200);
-        } else {
-            return response()->json(['message' => 'Failed to create the movie'], 500);
+            if ($movie->save()) {
+                return response()->json(['message' => 'Movie created successfully', 'movie' => $movie], 200);
+            } else {
+                return response()->json(['message' => 'Failed to create the movie'], 500);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            // Handle other unexpected errors
+            return response()->json([
+                'message' => 'An unexpected error occurred',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 
@@ -85,7 +99,6 @@ class MoviesController extends Controller
         } else {
             return response()->json(['message' => 'Movie not found'], 404);
         }
-
     }
 
     public function moviesWithoutSession()

@@ -96,11 +96,11 @@ export default {
         }
     },
     mounted() {
-        //const store = useAppStore();
-        //if (store.user?.type != 1) {
-            //this.$router.push('/');
-            //return;
-        //}
+        const store = useAppStore();
+        if (store.user?.type != 1) {
+            this.$router.push('/');
+            return;
+        }
 
         // Cargar películas
         getAllMovies(store.token).then(response => {

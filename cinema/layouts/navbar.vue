@@ -4,7 +4,7 @@
       <div class="flex justify-between items-center h-16">
         <!-- Logo -->
         <nuxt-link to="/" class="text-red-600 text-2xl font-bold hover:text-red-500 transition-colors duration-300">
-          CinesKings
+          KingsCinema
         </nuxt-link>
 
         <!-- Botón móvil -->

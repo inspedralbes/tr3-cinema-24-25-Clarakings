@@ -12,8 +12,8 @@ class EntradaController extends Controller
 {
     public function index()
     {
-        $entradas = Entrada::all();
-        return response()->json($entradas);
+        $tickets = Entrada::all();
+        return response()->json($tickets);
     }
 
     /**
@@ -31,7 +31,6 @@ class EntradaController extends Controller
             'cliente.email' => 'required',
             'cliente.name' => 'required',
             'cliente.surname' => 'required',
-            'cliente.birthday' => 'required',
             'cliente.phone_number' => 'required',
             'seats' => 'required|array|min:1|max:10',
             'seats.*' => ['required', 'regex:/^[A-L]-[1-9]|10$/'],
@@ -54,16 +53,16 @@ class EntradaController extends Controller
         // Extraer los datos del cliente y las entradas
         $session_id = $data['session_id'];
         $cliente = $data['cliente'];
-        $entradas = $data['seats'];
+        $tickets = $data['seats'];
 
         $errorCount = 0;
         $seatsInUse = Entrada::where('session_id', $session_id)->pluck('seat')->toArray();
 
         if (count($seatsInUse) > 0) {
-            for ($i = 0; $i < count($entradas); $i++) {
-                if (in_array($entradas[$i], $seatsInUse)) {
+            for ($i = 0; $i < count($tickets); $i++) {
+                if (in_array($tickets[$i], $seatsInUse)) {
                     $errorCount++;
-                } else if (count(array_unique($entradas)) != count($entradas)) {
+                } else if (count(array_unique($tickets)) != count($tickets)) {
                     return response()->json(['message' => 'Los asientos deben ser diferentes'], 400);
                 }
             }
@@ -71,18 +70,18 @@ class EntradaController extends Controller
 
         if ($errorCount == 0) {
             // Crear las entradas
-            for ($i = 0; $i < count($entradas); $i++) {
+            for ($i = 0; $i < count($tickets); $i++) {
 
                 $entrada = new Entrada();
 
                 $entrada->session_id = $session_id;
-                $entrada->seat = $entradas[$i];
+                $entrada->seat = $tickets[$i];
                 $entrada->email = $cliente['email'];
-                $entrada->first_name = $cliente['first_name'];
-                $entrada->last_name = $cliente['last_name'];
+                $entrada->name = $cliente['name'];
+                $entrada->surname = $cliente['surname'];
                 $entrada->phone_number = $cliente['phone_number'];
 
-                if (str_contains($entradas[$i], 'VIP')) {
+                if (str_contains($tickets[$i], 'VIP')) {
                     $entrada->price = $session->priceBase + 2.0;
                 } else {
                     $entrada->price = $session->priceBase;
@@ -106,9 +105,9 @@ class EntradaController extends Controller
             ];
             $totalPrice = EntradaController::showTotalPurchase($data);
             // Enviar correo
-            Mail::to($cliente['email'])->send(new CorreoEntradas($entradas, $cliente, $session_id, $totalPrice));
+            Mail::to($cliente['email'])->send(new CorreoEntradas($tickets, $cliente, $session_id, $totalPrice));
             // Todas las entradas se crearon correctamente
-            return response()->json(['message' => 'Las ' . count($entradas) . ' entradas se crearon correctamente'], 200);
+            return response()->json(['message' => 'Las ' . count($tickets) . ' entradas se crearon correctamente'], 200);
         }
     }
 
@@ -126,12 +125,12 @@ class EntradaController extends Controller
             return response()->json(['message' => 'El ID de la sesión es requerido'], 400);
         }
 
-        $entradas = Entrada::where('session_id', $id)->get();
+        $tickets = Entrada::where('session_id', $id)->get();
 
-        if ($entradas->isEmpty()) {
+        if ($tickets->isEmpty()) {
             return response()->json(['message' => 'No hay entradas para la sesión con ID ' . $id], 200);
         } else {
-            foreach ($entradas as $entrada) {
+            foreach ($tickets as $entrada) {
                 $seats[] = $entrada->seat;
             }
             return response()->json($seats);
@@ -154,11 +153,11 @@ class EntradaController extends Controller
 
         $email = $data['email'];
         $session_id = $data['session_id'];
-        $entradas = Entrada::where('email', $email)
+        $tickets = Entrada::where('email', $email)
                         ->where('session_id', $session_id)
                         ->get();
 
-        if (count($entradas) > 0) {
+        if (count($tickets) > 0) {
             return response()->json(['comprar' => 'False'], 200);
         } else {
             return response()->json(['comprar' => 'True'], 200);
@@ -170,37 +169,37 @@ class EntradaController extends Controller
      */
     public function showWithEmailIdSession(Request $request)
     {
-        $entradas = Entrada::where('session_id', $request->id)
+        $tickets = Entrada::where('session_id', $request->id)
                             ->where('email', $request->email)
                             ->get();
 
-        if ($entradas->isEmpty()) {
+        if ($tickets->isEmpty()) {
             return response()->json(['message' => 'Entrada no encontrada'], 404);
         } else {
-            return response()->json($entradas);
+            return response()->json($tickets);
         }
     }
 
     public function showWithEmail(Request $request)
     {
-        $entradas = Entrada::where('email', $request->email)->get();
+        $tickets = Entrada::where('email', $request->email)->get();
 
-        if ($entradas->isEmpty()) {
+        if ($tickets->isEmpty()) {
             return response()->json(['message' => 'Entrada no encontrada'], 404);
         } else {
-            return response()->json($entradas);
+            return response()->json($tickets);
         }
     }
 
     public function showTotalPurchase($request)
     {
-        $entradas = Entrada::where('email', $request['email'])->where('session_id', $request['session_id'])->get();
+        $tickets = Entrada::where('email', $request['email'])->where('session_id', $request['session_id'])->get();
 
-        if ($entradas->isEmpty()) {
+        if ($tickets->isEmpty()) {
             return response()->json(['message' => 'Entrada no encontrada'], 404);
         } else {
             $total = 0;
-            foreach ($entradas as $entrada) {
+            foreach ($tickets as $entrada) {
                 $total += $entrada->price;
             }
             return response()->json(['total' => $total], 200);

@@ -36,7 +36,7 @@ class CorreoEntradas extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Confirmación de Compra en CineVilla',
+            subject: 'Confirmación de Compra en KingsCinema',
         );
     }
 

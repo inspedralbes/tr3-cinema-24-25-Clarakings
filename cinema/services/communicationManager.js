@@ -342,7 +342,7 @@ export function deleteSession (id, token) {
     });
 }
 
-export function addMovie (data, token) {
+export function addMovie(data, token) {
     return new Promise((resolve, reject) => {
         fetch(`${url}/addMovie`, {
             method: 'POST',
@@ -351,17 +351,33 @@ export function addMovie (data, token) {
                 'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify(data)
-        }).then(response => {
-            if (response.status == 200) {
-                return response.json();
-            } else {
-                reject('Error al añadir la película: ' + response.statusText);
+        })
+        .then(response => {
+            // Log the entire response for debugging
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            // Try to get the response text even if it's an error
+            return response.text().then(text => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+                }
+                return text;
+            });
+        })
+        .then(text => {
+            try {
+                // Try to parse the text as JSON
+                const data = JSON.parse(text);
+                resolve(data);
+            } catch (parseError) {
+                // If parsing fails, resolve with the text
+                resolve(text);
             }
-        }).then(data => {
-            JSON.stringify(data);
-            resolve(data);
-        }).catch(error => {
-            reject(error);
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            reject(error.toString());
         });
     });
 }

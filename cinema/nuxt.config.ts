@@ -8,4 +8,5 @@ export default defineNuxtConfig({
       include: ['socket.io-client']
     }
   }
+  
 })

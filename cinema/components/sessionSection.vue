@@ -1,10 +1,20 @@
 <template>
-    <div v-show="showSession" class="flex-column m-9 text-center justify-center items-center bg-blue-950">
-        <h2 class="text-5xl font-bold text-white p-8">Próxima Sesion</h2>
-        <SessionCard :session="session" />
-    </div>
-    <div v-show="!showSession" class="bg-blue-950 p-4">
-        <h3 class="text-4xl font-bold text-center text-white">Próximamente se añadirán sesiones para tu película favorita</h3>
+    <div class="bg-neutral-900">
+            <div class="max-w-2xl mx-auto">
+                <SessionCard :session="session" />
+            </div>
+        
+        
+        <div v-show="!showSession" class="container mx-auto px-4 py-16">
+            <div class="bg-neutral-800 rounded-xl p-8 text-center">
+                <svg class="w-16 h-16 text-red-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <h3 class="text-2xl font-bold text-white mb-2">Próximamente</h3>
+                <p class="text-gray-400">Muy pronto añadiremos nuevas sesiones para esta película.</p>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -23,15 +33,11 @@ export default {
             showSession: false
         };
     },
-    methods: {
-    },
     mounted() {
         if (this.id_movie != undefined) {
             const store = useAppStore();
-            // Llamada a la API para obtener la sesión
             let id = parseInt(this.id_movie);
             getSessionByMovieId(id).then((response) => {
-                // id_session, day, hour, movie_id, total_tickets, tickets_sold
                 this.session = response;
                 this.id_movieSession = response.movie_id;
                 store.setSession(response);
@@ -40,8 +46,6 @@ export default {
             }).catch((error) => {
                 console.error(error);
             });
-        } else {
-            console.error("El parámetro id no está definido");
         }
     }
 };

@@ -14,13 +14,6 @@
         <div class="container mx-auto px-4 py-8">
             <div class="max-w-4xl mx-auto bg-neutral-800 rounded-xl shadow-xl p-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- ID -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-300 mb-2">ID de Sesión</label>
-                        <input v-model="id" type="number"
-                            class="w-full px-4 py-2 bg-neutral-700 border border-neutral-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
-                    </div>
-
                     <!-- Fecha y Hora -->
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-2">Fecha</label>

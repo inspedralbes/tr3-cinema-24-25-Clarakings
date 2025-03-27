@@ -1,0 +1,73 @@
+name: Preparant per Producció
+run-name: ${{ github.actor }} està pujant l'aplicació a PROD 🚀
+
+on:
+  push:
+    branches:
+      - 'main'
+
+  pull_request:
+    branches:
+      - 'main'
+      
+jobs:
+  Pujar-a-produccio-amb-SCP:
+    runs-on: ubuntu-latest
+    steps:
+      
+      - uses: actions/checkout@v4
+      
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+
+      - name: Install npm dependencies for Nuxt.js
+        working-directory: ./front/cinema
+        run: npm install
+      
+      - name: Run build task for Nuxt.js
+        working-directory: ./front/cinema
+        run: npm run build && npm run generate
+
+      - name: Pujant Nuxt.js
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --delete
+          path: cinema/dist/
+          remote_path: ${{ secrets.REMOTE_TARGET }}
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.KEY_SECRET }}  
+
+      - name: Pujant node  
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr --delete
+          path: back/cinema-node/
+          remote_path: ${{ secrets.REMOTE_TARGET }}/cinema-node
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.SSH_PRIVATE_KEY }}  
+
+      - name: Pujant Laravel  
+        uses: burnett01/rsync-deployments@7.0.0
+        with:
+          switches: -avzr 
+          path: back/cinema-backend/
+          remote_path: ${{ secrets.REMOTE_TARGET }}/cinema-backend
+          remote_host: ${{ secrets.REMOTE_HOST }}
+          remote_user: ${{ secrets.REMOTE_USER }}
+          remote_key: ${{ secrets.KEY_SECRET }} 
+      
+      - name: Npm install i composer install a prod
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          key: ${{ secrets.KEY_SECRET }}
+          command_timeout: 30m
+          script: |
+            ls && cd ${{ secrets.REMOTE_TARGET }}/node && npm install && cd .. && cd ./laravel && composer install 
+
+      - run: echo "🍏 This job's status is ${{ job.status }}."

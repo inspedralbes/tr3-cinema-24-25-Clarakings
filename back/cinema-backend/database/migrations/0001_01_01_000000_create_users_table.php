@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('phone_number');
             $table->string('password');
+            $table->integer('type')->default(2);
             $table->rememberToken();
             $table->timestamps();
         });
@@ -31,6 +32,16 @@ return new class extends Migration
             'phone_number'=> '123456789',
             'email'=> 'clara@gmail.com',
             'password'=> bcrypt('clara'),
+        ]);
+
+        DB::table('users')->insert([
+            'name'=> 'Admin',
+            'surname'=> 'Admin',
+            'birthday'=> '16/09/2005',
+            'phone_number'=> '123456789',
+            'email'=> 'admin@gmail.com',
+            'password'=> bcrypt('admin.123'),
+            'type' => 1,
         ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -29,7 +29,7 @@ return new class extends Migration
 
         });
         DB::table('sessions')->insert([
-            'day' => '2024-04-15',
+            'day' => '2025-04-15',
             'hour' => '18:00:00',
             'movie_id' => '1',
             'audienceDay' => true,

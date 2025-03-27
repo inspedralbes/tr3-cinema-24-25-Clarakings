@@ -40,7 +40,7 @@
     </div>
     <!-- Derechos de autor -->
     <div class="text-center mt-8 text-gray-400">
-      <p>&copy; 2025 CinesKings. Todos los derechos reservados.</p>
+      <p>&copy; 2025 KingsCinema. Todos los derechos reservados.</p>
     </div>
   </footer>
 </template>

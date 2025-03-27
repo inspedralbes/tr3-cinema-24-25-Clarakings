@@ -13,24 +13,29 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'surname' => 'required',
+        $fields = $request->validate([
+            'name' => 'required|string',
+            'surname' => 'required|string',
             'birthday' => 'required',
-            'phone_number' => 'required',
-            'email' => 'required',
-            'password' => 'required'
+            'phone_number' => 'required|string',
+            'email' => 'required|string|unique:users,email',
+            'password' => 'required|string|confirmed'
         ]);
 
+        $user = new User();
 
-        $user = User::create([
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'birthday' => $request->birthday,
-            'phone_number' => $request->phone_number,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $user->name = $fields['name'];
+        $user->surname = $fields['surname'];
+        $user->birthday =$fields['birthday'];
+        $user->phone_number = $fields['phone_number'];
+        $user->email = $fields['email'];
+        $user->password = bcrypt($fields['password']);
+
+        if (isset($fields['type'])) {
+            $user->type = $fields['type'];
+        }
+
+        $user->save();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
